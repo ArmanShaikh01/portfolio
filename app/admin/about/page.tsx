@@ -57,7 +57,8 @@ export default function AdminAboutPage() {
             }
         } catch (error) {
             console.error('Error saving about:', error);
-            alert('Failed to save about section');
+            const errorMessage = error instanceof Error ? error.message : 'Failed to save about section';
+            alert(errorMessage);
         } finally {
             setSaving(false);
         }
