@@ -3,24 +3,40 @@ import dbConnect from '@/lib/mongodb';
 import Message from '@/models/Message';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
+import { validateMessage } from '@/lib/validation';
+import { messageRateLimiter, getClientIp, rateLimitResponse } from '@/lib/rate-limit';
+import { handleError, validationError } from '@/lib/error-handler';
 
 // POST - Create new message (public)
 export async function POST(request: NextRequest) {
     try {
-        await dbConnect();
-        const body = await request.json();
+        // Rate limiting
+        const clientIp = getClientIp(request);
+        const allowed = await messageRateLimiter(clientIp);
 
-        const message = await Message.create(body);
+        if (!allowed) {
+            return rateLimitResponse();
+        }
+
+        // Validate and sanitize input
+        const body = await request.json();
+        const validatedData = validateMessage(body);
+
+        // Connect to database
+        await dbConnect();
+
+        // Create message
+        const message = await Message.create(validatedData);
 
         return NextResponse.json({
             success: true,
             data: message,
         });
-    } catch (error: any) {
-        return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 400 }
-        );
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return handleError(validationError(error.message));
+        }
+        return handleError(error);
     }
 }
 
@@ -42,10 +58,7 @@ export async function GET() {
             success: true,
             data: messages,
         });
-    } catch (error: any) {
-        return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 400 }
-        );
+    } catch (error: unknown) {
+        return handleError(error);
     }
 }
