@@ -103,5 +103,6 @@ export default async function AboutPage() {
                     </div>
                 </div>
             </div>
-            );
+        </div>
+    );
 }
