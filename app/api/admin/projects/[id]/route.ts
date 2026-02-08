@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Project from '@/models/Project';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
+import { revalidatePath } from 'next/cache';
 
 // PUT - Update project
 export async function PUT(
@@ -34,6 +35,10 @@ export async function PUT(
                 { status: 404 }
             );
         }
+
+        // Revalidate pages to show updated project
+        revalidatePath('/');
+        revalidatePath('/projects');
 
         return NextResponse.json({
             success: true,
@@ -71,6 +76,10 @@ export async function DELETE(
                 { status: 404 }
             );
         }
+
+        // Revalidate pages to remove deleted project
+        revalidatePath('/');
+        revalidatePath('/projects');
 
         return NextResponse.json({
             success: true,

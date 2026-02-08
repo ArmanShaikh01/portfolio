@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Project from '@/models/Project';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
+import { revalidatePath } from 'next/cache';
 
 // GET - Get all projects including private (admin only)
 export async function GET() {
@@ -49,6 +50,10 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         const project = await Project.create(body);
+
+        // Revalidate homepage and projects page to show new project immediately
+        revalidatePath('/');
+        revalidatePath('/projects');
 
         return NextResponse.json({
             success: true,
