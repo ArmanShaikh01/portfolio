@@ -38,8 +38,8 @@ export default function LoginPage() {
             if (result?.error) {
                 setError('Invalid email or password');
             } else {
+                // Redirect to admin dashboard - router.push is fast enough
                 router.push('/admin');
-                router.refresh();
             }
         } catch (error) {
             setError('An error occurred. Please try again.');
