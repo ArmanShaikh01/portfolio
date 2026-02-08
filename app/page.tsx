@@ -62,7 +62,7 @@ export default async function Home() {
                             </p>
                             <div className="flex gap-4 justify-center md:justify-start flex-wrap">
                                 <a href="#projects">
-                                    <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 shadow-2xl hover:shadow-3xl transition-all font-bold px-8 py-4 text-lg border-2 border-white">
+                                    <Button size="lg" className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-2xl hover:shadow-3xl transition-all font-bold px-8 py-4 text-lg">
                                         View Projects
                                     </Button>
                                 </a>
